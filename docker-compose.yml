@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: notifyflow_mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: notifyflow
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - notifyflow_net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: notifyflow_redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    command: redis-server --requirepass redis123
+    volumes:
+      - redis_data:/data
+    networks:
+      - notifyflow_net
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: notifyflow_redis_ui
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:redis123
+    depends_on:
+      - redis
+    networks:
+      - notifyflow_net
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  notifyflow_net:
+    driver: bridge
