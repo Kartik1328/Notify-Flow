@@ -4,6 +4,10 @@ import redis from "./config/redis.js";
 import env from "./config/env.js";
 import logger from "./utils/logger.js";
 
+// Import workers — this starts them automatically
+import './queues/workers/emailWorker.js';
+import './queues/workers/jobWorker.js';
+
 await connectDB();
 
 const server = app.listen(env.PORT, () => {
